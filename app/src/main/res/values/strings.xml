@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Omdb Api Demo</string>
+    <string name="search_hint">Search…</string>
+
+    <!-- Errors -->
+    <string name="error_none">All works fine</string>
+</resources>
