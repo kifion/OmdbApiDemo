@@ -1,30 +1,34 @@
 package com.example.omdbapidemo.presentation.feature.detail
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.omdbapidemo.domain.model.MovieDetail
 import com.example.omdbapidemo.domain.usecase.detail.GetMovieDetailUseCase
-import com.example.omdbapidemo.presentation.core.Event
+import com.example.omdbapidemo.domain.usecase.detail.GetMovieListUseCase
+import com.example.omdbapidemo.domain.usecase.home.SaveLastTextRequest
+import com.example.omdbapidemo.presentation.core.BaseViewModel
+import com.example.omdbapidemo.presentation.core.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val getSearchDetailUseCase: GetMovieDetailUseCase,
-) : ViewModel() {
+) : BaseViewModel() {
 
-    var detail = MutableLiveData<Event<MovieDetail>>()
+    var detail = MutableLiveData<Response<MovieDetail>>()
 
     fun searchById(id: String) {
-        this.viewModelScope.launch {
-            detail.postValue(Event.loading())
-            val responseDetail = getSearchDetailUseCase.invoke(GetMovieDetailUseCase.Params(id))
+        viewModelScope.launch(Dispatchers.IO) {
+            detail.postValue(Response.loading())
             try {
-                detail.postValue(Event.success(responseDetail))
+                val responseSearchList = getSearchDetailUseCase.invoke(GetMovieDetailUseCase.Params(id))
+                detail.postValue(Response.success(responseSearchList))
             } catch (exception: Exception) {
-                detail.postValue(Event.error("Connection problem"))
+                detail.postValue(Response.error(null))
             }
         }
     }

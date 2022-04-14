@@ -5,18 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.omdbapidemo.R
-import com.example.omdbapidemo.presentation.core.Status
 import com.example.omdbapidemo.domain.model.MovieDetail
+import com.example.omdbapidemo.presentation.core.BaseFragment
+import com.example.omdbapidemo.presentation.core.Response
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
 
 @AndroidEntryPoint
-class DetailFragment : Fragment() {
+class DetailFragment : BaseFragment() {
 
     private val viewModel: DetailViewModel by viewModels()
 
@@ -35,9 +35,9 @@ class DetailFragment : Fragment() {
 
         viewModel.detail.observe(viewLifecycleOwner, { eventDetail ->
             when (eventDetail.status) {
-                Status.LOADING -> showProgress(true)
-                Status.SUCCESS -> updateUi(eventDetail.data)
-                Status.ERROR -> showError(eventDetail.error)
+                Response.Status.LOADING -> showProgress(true)
+                Response.Status.SUCCESS -> updateUi(eventDetail.data)
+                Response.Status.ERROR -> showError(eventDetail.error)
             }
         })
     }
