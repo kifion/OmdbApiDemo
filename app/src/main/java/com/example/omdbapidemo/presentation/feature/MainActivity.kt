@@ -7,6 +7,7 @@ import com.example.omdbapidemo.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
+@Suppress("unused")
 class MainActivity : AppCompatActivity() {
     private val navController by lazy {
         (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController

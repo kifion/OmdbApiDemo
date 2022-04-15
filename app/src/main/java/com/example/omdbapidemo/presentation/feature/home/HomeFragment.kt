@@ -64,7 +64,7 @@ class HomeFragment : BaseFragment() {
         })
         searchList.adapter = searchListAdapter
 
-        searchInputLayout.editText?.doOnTextChanged { text, start, before, _ ->
+        searchInputLayout.editText?.doOnTextChanged { text, _, _, _ ->
             text?.let {
                 if(viewModel.latestSearchText.value as String != text.toString()) {
                     viewModel.searchByText(it.toString())

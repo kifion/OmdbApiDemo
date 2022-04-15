@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
     var searchList = MutableLiveData<Status<List<Movie>>>()
     var latestSearchText = MutableLiveData<String>()
 
-    var searchByTextJob: Job? = null
+    private var searchByTextJob: Job? = null
 
     fun searchByText(text: String) {
         searchByTextJob?.cancel()
