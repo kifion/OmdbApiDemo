@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.omdbapidemo.R
 import com.example.omdbapidemo.domain.model.Movie
+import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.presentation.core.BaseFragment
 import com.example.omdbapidemo.presentation.core.Response
 import com.example.omdbapidemo.presentation.view.VerticalSpaceItemDecoration
@@ -37,11 +38,11 @@ class HomeFragment : BaseFragment() {
 
         setupUi()
 
-        viewModel.searchList.observe(viewLifecycleOwner, { eventSearchList ->
-            when (eventSearchList.status) {
-                Response.Status.LOADING -> showProgress(true)
-                Response.Status.SUCCESS -> updateUi(eventSearchList.data)
-                Response.Status.ERROR -> showError(eventSearchList.error)
+        viewModel.searchList.observe(viewLifecycleOwner, { response ->
+            when (response) {
+                is Status.Loading  -> showProgress(true)
+                is Status.Error -> showError(response.error)
+                is Status.Success-> updateUi(response.data)
             }
         })
 

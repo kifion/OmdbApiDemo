@@ -10,12 +10,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.InternalCoroutinesApi
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule {
 
+    @InternalCoroutinesApi
     @Provides
     @Singleton
     fun provideNetworkRepository(apiService: OmdbApiService): NetworkRepository {

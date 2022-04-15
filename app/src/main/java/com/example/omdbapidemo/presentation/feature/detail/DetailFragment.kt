@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.omdbapidemo.R
 import com.example.omdbapidemo.domain.model.MovieDetail
+import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.presentation.core.BaseFragment
 import com.example.omdbapidemo.presentation.core.Response
 import com.google.android.material.snackbar.Snackbar
@@ -34,10 +35,10 @@ class DetailFragment : BaseFragment() {
         viewModel.searchById(arguments.searchItem.imdbId)
 
         viewModel.detail.observe(viewLifecycleOwner, { eventDetail ->
-            when (eventDetail.status) {
-                Response.Status.LOADING -> showProgress(true)
-                Response.Status.SUCCESS -> updateUi(eventDetail.data)
-                Response.Status.ERROR -> showError(eventDetail.error)
+            when (eventDetail) {
+                is Status.Loading  -> showProgress(true)
+                is Status.Error -> showError(eventDetail.error)
+                is Status.Success-> updateUi(eventDetail.data)
             }
         })
     }

@@ -6,9 +6,7 @@ import javax.inject.Inject
 class SaveLastTextRequest @Inject constructor(
     private val repository: UserPreferenceRepository
 ) {
-    data class Params(val word: String)
-
-    suspend operator fun invoke(params: Params) {
-        return repository.saveLastTextRequest(params.word)
+    suspend operator fun invoke(word: String) {
+        return repository.saveLastTextRequest(word)
     }
 }

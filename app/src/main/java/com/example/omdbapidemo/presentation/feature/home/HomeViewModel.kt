@@ -1,19 +1,16 @@
 package com.example.omdbapidemo.presentation.feature.home
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.omdbapidemo.domain.model.Movie
+import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.domain.usecase.detail.GetMovieListUseCase
 import com.example.omdbapidemo.domain.usecase.home.GetLastTextRequest
 import com.example.omdbapidemo.domain.usecase.home.SaveLastTextRequest
 import com.example.omdbapidemo.presentation.core.BaseViewModel
-import com.example.omdbapidemo.presentation.core.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +24,7 @@ class HomeViewModel @Inject constructor(
         setupLastSearchTextRequest()
     }
 
-    var searchList = MutableLiveData<Response<List<Movie>>>()
+    var searchList = MutableLiveData<Status<List<Movie>>>()
     var lastSearchText = MutableLiveData<String>()
 
     var queryTextChangedJob: Job? = null
@@ -36,19 +33,17 @@ class HomeViewModel @Inject constructor(
         queryTextChangedJob?.cancel()
         queryTextChangedJob = viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
-            searchList.postValue(Response.loading())
-            try {
-                val responseSearchList = getSearchListUseCase.invoke(GetMovieListUseCase.Params(text))
-                saveLastTextRequest.invoke(SaveLastTextRequest.Params(text))
-                searchList.postValue(Response.success(responseSearchList))
-            } catch (exception: Exception) {
-                searchList.postValue(Response.error(null))
-            }
+            getSearchListUseCase.invoke(text)
+                .collect { response ->
+                    withContext(Dispatchers.Main) { searchList.value = response }
+                }
+            saveLastTextRequest.invoke(text)
+            lastSearchText.postValue(text)
         }
     }
 
     private fun setupLastSearchTextRequest() {
-        this.viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val lastRequest = getLastTextRequest.invoke()
             lastSearchText.postValue(lastRequest)
             searchByText(lastRequest)
