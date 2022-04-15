@@ -7,7 +7,6 @@ import com.example.omdbapidemo.data.remote.mapper.MovieDetailMapper
 import com.example.omdbapidemo.data.remote.mapper.MovieSearchMapper
 import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.domain.repository.NetworkRepository
-import com.example.omdbapidemo.presentation.core.Response
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

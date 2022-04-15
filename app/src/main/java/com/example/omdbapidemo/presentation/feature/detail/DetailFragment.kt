@@ -11,7 +11,6 @@ import com.example.omdbapidemo.R
 import com.example.omdbapidemo.domain.model.MovieDetail
 import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.presentation.core.BaseFragment
-import com.example.omdbapidemo.presentation.core.Response
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
