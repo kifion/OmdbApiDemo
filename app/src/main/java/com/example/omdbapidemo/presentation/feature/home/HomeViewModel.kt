@@ -21,31 +21,32 @@ class HomeViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     init {
-        setupLastSearchTextRequest()
+        initLatestSearchText()
     }
 
     var searchList = MutableLiveData<Status<List<Movie>>>()
-    var lastSearchText = MutableLiveData<String>()
+    var latestSearchText = MutableLiveData<String>()
 
-    var queryTextChangedJob: Job? = null
+    var searchByTextJob: Job? = null
 
     fun searchByText(text: String) {
-        queryTextChangedJob?.cancel()
-        queryTextChangedJob = viewModelScope.launch(Dispatchers.IO) {
+        searchByTextJob?.cancel()
+        searchByTextJob = viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
             getSearchListUseCase.invoke(text)
                 .collect { response ->
                     withContext(Dispatchers.Main) { searchList.value = response }
                 }
             saveLastTextRequest.invoke(text)
-            lastSearchText.postValue(text)
         }
     }
 
-    private fun setupLastSearchTextRequest() {
-        viewModelScope.launch {
+    private fun initLatestSearchText() {
+        viewModelScope.launch(Dispatchers.IO) {
             val lastRequest = getLastTextRequest.invoke()
-            lastSearchText.postValue(lastRequest)
+            withContext(Dispatchers.Main) {
+                latestSearchText.postValue(lastRequest)
+            }
             searchByText(lastRequest)
         }
     }

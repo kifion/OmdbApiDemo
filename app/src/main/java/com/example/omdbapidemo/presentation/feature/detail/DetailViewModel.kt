@@ -7,8 +7,10 @@ import com.example.omdbapidemo.domain.model.Status
 import com.example.omdbapidemo.domain.usecase.detail.GetMovieDetailUseCase
 import com.example.omdbapidemo.presentation.core.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,9 +21,9 @@ class DetailViewModel @Inject constructor(
     val detail: MutableLiveData<Status<MovieDetail>> = MutableLiveData<Status<MovieDetail>>()
 
     fun searchById(id: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             getSearchDetailUseCase.invoke(id)
-                .collect { response -> detail.value = response }
+                .collect { response -> withContext(Dispatchers.Main) { detail.value = response } }
         }
     }
 }
