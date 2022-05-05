@@ -1,6 +1,5 @@
 package com.example.omdbapidemo.presentation.feature.home
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.omdbapidemo.domain.model.Movie
 import com.example.omdbapidemo.domain.model.Status
@@ -10,6 +9,7 @@ import com.example.omdbapidemo.domain.usecase.home.SaveLastTextRequest
 import com.example.omdbapidemo.presentation.core.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
@@ -24,8 +24,8 @@ class HomeViewModel @Inject constructor(
         initLatestSearchText()
     }
 
-    var searchList = MutableLiveData<Status<List<Movie>>>()
-    var latestSearchText = MutableLiveData<String>()
+    var latestSearchText = MutableStateFlow("")
+    var searchList = MutableStateFlow<Status<List<Movie>>>(Status.Empty)
 
     private var searchByTextJob: Job? = null
 
@@ -45,7 +45,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val lastRequest = getLastTextRequest.invoke()
             withContext(Dispatchers.Main) {
-                latestSearchText.postValue(lastRequest)
+                latestSearchText.emit(lastRequest)
             }
             searchByText(lastRequest)
         }

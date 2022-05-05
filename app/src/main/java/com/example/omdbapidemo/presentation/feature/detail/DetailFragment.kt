@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.omdbapidemo.R
 import com.example.omdbapidemo.domain.model.MovieDetail
@@ -13,6 +14,7 @@ import com.example.omdbapidemo.presentation.core.BaseFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class DetailFragment : BaseFragment() {
@@ -32,13 +34,16 @@ class DetailFragment : BaseFragment() {
         val arguments = DetailFragmentArgs.fromBundle(requireArguments())
         viewModel.searchById(arguments.searchItem.imdbId)
 
-        viewModel.detail.observe(viewLifecycleOwner, { eventDetail ->
-            when (eventDetail) {
-                is Status.Loading  -> showProgress(true)
-                is Status.Error -> showError(eventDetail.error)
-                is Status.Success-> updateUi(eventDetail.data)
+        lifecycleScope.launchWhenStarted {
+            viewModel.detail.collect { eventDetail ->
+                when (eventDetail) {
+                    is Status.Loading -> showProgress(true)
+                    is Status.Error -> showError(eventDetail.error)
+                    is Status.Success -> updateUi(eventDetail.data)
+                    is Status.Empty -> {}
+                }
             }
-        })
+        }
     }
 
     private fun showError(error: String?) {

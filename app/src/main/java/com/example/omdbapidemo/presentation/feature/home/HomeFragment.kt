@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.omdbapidemo.R
@@ -17,6 +18,8 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_detail.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -35,19 +38,22 @@ class HomeFragment : BaseFragment() {
 
         setupUi()
 
-        viewModel.searchList.observe(viewLifecycleOwner, { response ->
-            when (response) {
-                is Status.Loading  -> showProgress(true)
-                is Status.Error -> showError(response.error)
-                is Status.Success-> updateUi(response.data)
+        lifecycleScope.launchWhenStarted {
+            viewModel.searchList.collectLatest { response ->
+                when (response) {
+                    is Status.Loading -> showProgress(true)
+                    is Status.Error -> showError(response.error)
+                    is Status.Success -> updateUi(response.data)
+                    is Status.Empty -> {}
+                }
             }
-        })
+        }
 
-        viewModel.latestSearchText.observe(viewLifecycleOwner, {
-            it?.let {
+        lifecycleScope.launchWhenCreated {
+            viewModel.latestSearchText.collectLatest {
                 searchInputLayout.editText?.setText(it)
             }
-        })
+        }
     }
 
     private fun setupUi() {
